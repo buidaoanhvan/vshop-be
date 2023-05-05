@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-router.use("/v1/api", (req, res) => {
-  return res.status(200).json({
-    message: "ok",
-  });
-});
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+router.use("/v1/api", require("../routers/auth/index"));
 
 module.exports = router;
