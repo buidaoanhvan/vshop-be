@@ -12,7 +12,7 @@ class LoginService {
             if (comparePass === false) {
               return false;
             } else {
-              req.session.user = user;
+
               return true;
             }
         };
