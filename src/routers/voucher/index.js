@@ -50,8 +50,8 @@ router.patch(
     checkSchema(voucherValidatorSchema),
     VoucherController.update
 );
-// router.delete(
-//     "/voucher/delete/:id",
+// router.upload(
+//     "/voucher/upload/",
 //     checkSchema(voucherValidatorSchema),
 //     VoucherController.delete
 // );
