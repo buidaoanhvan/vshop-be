@@ -14,7 +14,7 @@ class ShopService {
     shop_address,
   }) => {
     //check user shop
-    const checkUser = await findUserEmails(email);
+    const checkUser = await findUserEmail(email);
     if (checkUser) {
       return { code: "01", message: "User already registered" };
     }
