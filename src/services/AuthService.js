@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const { createTokens } = require("../utils/auth.util");
-
+const lodash = require("lodash");
 class AuthService {
   //Register user
   static registerService = async ({ email, password, fullname, phone }) => {
@@ -23,7 +23,11 @@ class AuthService {
       },
     });
 
-    return { code: "00", message: "User created successfully", data: user };
+    return {
+      code: "00",
+      message: "User created successfully",
+      data: lodash.pick(user, ["email", "fullname", "phone"]),
+    };
   };
 
   //Login user
@@ -39,16 +43,18 @@ class AuthService {
     } else {
       const { accessToken, refreshToken } = await createTokens(
         {
-          id: isUser.id,
-          email: isUser.email,
-          role: isUser.role_id,
+          enu: isUser.email,
+          nru: isUser.fullname,
+          phu: isUser.phone,
+          ixd: isUser.id,
+          iad: isUser.role_id,
         },
         process.env.PUBLIC_KEY
       );
       return {
         code: "00",
         message: "Login ok",
-        data: isUser,
+        data: lodash.pick(isUser, ["email", "fullname", "phone"]),
         token: { accessToken, refreshToken },
       };
     }
