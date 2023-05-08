@@ -1,11 +1,29 @@
 const express = require("express");
 const router = express.Router();
-const AuthController = require('../../controllers/AuthController')
+const AuthController = require("../../controllers/AuthController");
+const { checkSchema } = require("express-validator");
 
-// const { PrismaClient } = require("@prisma/client");
-// const prisma = new PrismaClient();
+const registerValidatorSchema = {
+  email: {
+    isEmail: true,
+    notEmpty: true,
+  },
+  password: {
+    isStrongPassword: true,
+    notEmpty: true,
+  },
+  fullname: {
+    notEmpty: true,
+  },
+  phone: {
+    notEmpty: true,
+  },
+};
 
-router.post("/auth/register", AuthController.register);
-router.get("/auth/login", AuthController.login);
+router.post(
+  "/auth/register",
+  checkSchema(registerValidatorSchema),
+  AuthController.register
+);
 
 module.exports = router;

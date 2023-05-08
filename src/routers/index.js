@@ -1,9 +1,26 @@
 const express = require("express");
 const router = express.Router();
+const AuthController = require("../controllers/AuthController");
+const { checkSchema } = require("express-validator");
+const authenticateJWT = require("../middlewares/auth");
 
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const loginValidatorSchema = {
+  email: {
+    isEmail: true,
+    notEmpty: true,
+  },
+  password: {
+    notEmpty: true,
+  },
+};
 
-router.use("/v1/api", require("../routers/auth/index"));
+router.get(
+  "/v1/api/auth/login",
+  checkSchema(loginValidatorSchema),
+  AuthController.login
+);
+
+router.use("/v1/api", authenticateJWT, require("../routers/auth/index"));
+router.use("/v1/api", authenticateJWT, require("../routers/shop/index"));
 
 module.exports = router;
