@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const { createTokens } = require("../utils/auth.util");
 const lodash = require("lodash");
+
 class AuthService {
   //Register user
   static registerService = async ({ email, password, fullname, phone }) => {
