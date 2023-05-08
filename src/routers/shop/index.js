@@ -3,6 +3,8 @@ const router = express.Router();
 const ShopController = require("../../controllers/ShopController");
 const { checkSchema } = require("express-validator");
 
+const { isAdmin } = require("../../middlewares/authorize");
+
 const createdShopValidatorSchema = {
   email: {
     isEmail: true,
@@ -31,6 +33,7 @@ const createdShopValidatorSchema = {
 
 router.post(
   "/shop",
+  isAdmin,
   checkSchema(createdShopValidatorSchema),
   ShopController.createdShop
 );
