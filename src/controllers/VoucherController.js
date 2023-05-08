@@ -12,25 +12,14 @@ class VoucherController {
                 data: errors.array(),
             });
         }
-        try {
-            const data = await VoucherService.create(req.body);
-            res.status(200).json(data);
-        } catch (errors) {
-            res.status(201).json("Lỗi exception");
-            console.log(errors);
-        }
-
+        const data = await VoucherService.create(req.body);
+        res.status(200).json(data);
     };
 
     view = async (req, res, next) => {
-        try {
-            const data = await VoucherService.view();
-            res.status(200).json(data);
-        } catch (errors) {
-            res.status(201).json("Lỗi exception");
-            console.log(errors);
-        }
-
+        console.log(req.user)
+        const data = await VoucherService.view();
+        res.status(200).json(data);
     };
 
     update = async (req, res, next) => {
@@ -47,15 +36,10 @@ class VoucherController {
         const { shop_id, title, description, image, status,
             discount_value, discount_type, max_discount,
             start_time, end_time } = req.body;
-        try {
-            const data = await VoucherService.update(id, shop_id, title, description, image, status,
-                discount_value, discount_type, max_discount, start_time, end_time);
-            res.status(200).json(data);
-        } catch (errors) {
-            res.status(201).json("Lỗi exception");
-            console.log(errors);
-        }
 
+        const data = await VoucherService.update(id, shop_id, title, description, image, status,
+            discount_value, discount_type, max_discount, start_time, end_time);
+        res.status(200).json(data);
     };
 
     // delete = async (req, res, next) => {
