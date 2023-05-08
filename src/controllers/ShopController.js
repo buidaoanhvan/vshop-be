@@ -11,7 +11,7 @@ class ShopController {
         data: errors.array(),
       });
     }
-    const data = await ShopService.createdShopService();
+    const data = await ShopService.createdShopService(req.body);
     res.status(200).json(data);
   };
 }

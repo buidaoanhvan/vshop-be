@@ -14,8 +14,8 @@ model codex {
   is_used    Int?
   phone      String?   @db.VarChar(255)
   status     Int?
-  created_at DateTime? @db.DateTime(0)
-  updated_at DateTime? @db.DateTime(0)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
   vouchers   vouchers? @relation(fields: [voucher_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "codex_ibfk_1")
 
   @@index([voucher_id], map: "voucher_id")
@@ -34,8 +34,8 @@ model shops {
   logo       String?    @db.VarChar(255)
   address    String?    @db.VarChar(255)
   status     Int?
-  created_at DateTime?  @db.DateTime(0)
-  updated_at DateTime?  @db.DateTime(0)
+  created_at DateTime?  @default(now())
+  updated_at DateTime?  @updatedAt
   users      users[]
   vouchers   vouchers[]
 }
@@ -49,8 +49,8 @@ model users {
   status     Int?
   role_id    Int?
   shop_id    Int?
-  created_at DateTime? @db.DateTime(0)
-  updated_at DateTime? @db.DateTime(0)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
   roles      roles?    @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_1")
   shops      shops?    @relation(fields: [shop_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_ibfk_2")
 
@@ -70,8 +70,8 @@ model vouchers {
   max_discount   Int?
   start_time     DateTime? @db.DateTime(0)
   end_time       DateTime? @db.DateTime(0)
-  created_at     DateTime? @db.DateTime(0)
-  updated_at     DateTime? @db.DateTime(0)
+  created_at     DateTime? @default(now())
+  updated_at     DateTime? @updatedAt
   codex          codex[]
   shops          shops?    @relation(fields: [shop_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "vouchers_ibfk_1")
 

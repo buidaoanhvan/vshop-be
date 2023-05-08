@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+require("express-async-errors");
 const AuthController = require("../controllers/AuthController");
 const { checkSchema } = require("express-validator");
 const authenticateJWT = require("../middlewares/auth");
