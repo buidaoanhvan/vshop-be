@@ -7,7 +7,7 @@ const logger = require("./utils/logger.util");
 
 const errorHandling = (err, req, res, next) => {
   logger.error(
-    `${err.status || 500} - ${req.user.email} - ${err.message} - ${
+    `${err.status || 500} - ${req.user?.email} - ${err.message} - ${
       req.originalUrl
     } - ${req.method} - ${req.ip}`
   );
