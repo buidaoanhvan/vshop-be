@@ -16,6 +16,7 @@ const errorHandling = (err, req, res, next) => {
     message: "Server error",
   });
 };
+app.use(express.static("public"));
 app.use(express.json());
 app.use("/favicon.ico", express.static("images/favicon.ico"));
 app.use(helmet());
