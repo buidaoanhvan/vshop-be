@@ -17,9 +17,11 @@ const codexValidatorSchema = {
 };
 
 router.post("/code/create",
-    checkSchema(codexValidatorSchema),
+    // checkSchema(codexValidatorSchema),
     CodexController.create
 );
 router.get("/code/view", CodexController.view);
+router.post("/code/qrcode", CodexController.generateQRCode);
+
 
 module.exports = router;
