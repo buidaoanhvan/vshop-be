@@ -34,6 +34,7 @@
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "qrcode": "^1.5.3",
+    "vue3-qr-reader": "^1.0.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {
