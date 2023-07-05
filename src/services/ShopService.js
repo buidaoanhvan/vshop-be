@@ -60,7 +60,7 @@ class ShopService {
     };
   };
 
-  // Update Shop
+  // Update Shop aa
   static update = async (
     id,
     email,
