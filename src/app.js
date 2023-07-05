@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
@@ -22,6 +23,7 @@ app.use("/favicon.ico", express.static("images/favicon.ico"));
 app.use(helmet());
 app.use(compression());
 app.use(morgan("dev"));
+app.use(cors());
 app.use("/", require("./routers/index"));
 app.use(errorHandling);
 

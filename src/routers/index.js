@@ -16,7 +16,7 @@ const loginValidatorSchema = {
   },
 };
 
-router.get(
+router.post(
   "/v1/api/auth/login",
   checkSchema(loginValidatorSchema),
   AuthController.login

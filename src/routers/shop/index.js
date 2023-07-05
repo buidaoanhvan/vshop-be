@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ShopController = require("../../controllers/ShopController");
-const { checkSchema } = require("express-validator");
+const { checkSchema, param } = require("express-validator");
 
 const { isAdmin } = require("../../middlewares/authorize");
 
@@ -36,6 +36,20 @@ router.post(
   isAdmin,
   checkSchema(createdShopValidatorSchema),
   ShopController.createdShop
+);
+
+router.get("/shop", ShopController.allShop);
+
+router.patch(
+  "/shop/update/:id",
+  checkSchema(createdShopValidatorSchema),
+  ShopController.update
+);
+
+router.delete(
+  "/shop/delete/:id",
+  param("id").isInt().notEmpty(),
+  ShopController.deleteShop
 );
 
 module.exports = router;
