@@ -49,6 +49,58 @@ class ShopService {
       },
     };
   };
+
+  //Get Shop All
+  static getAllShopService = async () => {
+    const data = await prisma.shops.findMany();
+    return {
+      code: "00",
+      message: "Get All Shop Success",
+      data,
+    };
+  };
+
+  // Update Shop
+  static update = async (
+    id,
+    email,
+    password,
+    fullname,
+    phone,
+    shop_name,
+    shop_logo,
+    shop_address
+  ) => {
+    const shop = await prisma.shops.update({
+      where: { id: parseInt(id) },
+      data: {
+        email,
+        password,
+        fullname,
+        phone,
+        shop_name,
+        shop_logo,
+        shop_address,
+      },
+    });
+    return {
+      code: "00",
+      message: "Shop update success!",
+      data: shop,
+    };
+  };
+
+  // Delete Shop
+  static deleteShop = async (id) => {
+    const shop = await prisma.shops.delete({
+      where: { id: parseInt(id) },
+    });
+    return {
+      code: "00",
+      message: "Shop deleted successfully!",
+      data: shop,
+    };
+  };
 }
 
 module.exports = ShopService;
