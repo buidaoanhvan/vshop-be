@@ -4,7 +4,8 @@ const helmet = require("helmet");
 const compression = require("compression");
 const app = express();
 const logger = require("./utils/logger.util");
-
+var cors = require('cors');
+app.use(cors());
 const errorHandling = (err, req, res, next) => {
   logger.error(
     `${err.status || 500} - ${req.user?.email} - ${err.message} - ${

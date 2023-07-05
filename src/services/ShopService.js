@@ -27,6 +27,8 @@ class ShopService {
         status: 1,
       },
     });
+
+    
     //get role SHOP
     const shopRole = await getRole("SHOP");
     //created user shop

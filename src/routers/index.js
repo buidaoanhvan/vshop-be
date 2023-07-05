@@ -16,13 +16,13 @@ const loginValidatorSchema = {
   },
 };
 
-router.get(
+router.post(
   "/v1/api/auth/login",
   checkSchema(loginValidatorSchema),
   AuthController.login
 );
 
-router.use("/v1/api", authenticateJWT, require("../routers/auth/index"));
+router.use("/v1/api", require("../routers/auth/index"));
 router.use("/v1/api", authenticateJWT, require("../routers/codex/index"));
 router.use("/v1/api", authenticateJWT, require("../routers/shop/index"));
 router.use("/v1/api", authenticateJWT, require("../routers/voucher/index"));
