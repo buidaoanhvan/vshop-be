@@ -20,6 +20,18 @@ class ShopController {
     res.status(200).json(data);
   };
 
+  getShopById = async (req, res, next) => {
+    const { id } = req.params;
+    const shop = await ShopService.getShopById(id);
+    res.status(200).json(shop);
+  };
+
+  searchShopByName = async (req, res, next) => {
+    const { name } = req.params;
+    const shops = await ShopService.searchShopByName(name);
+    res.status(200).json(shops);
+  };
+
   update = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -31,33 +43,9 @@ class ShopController {
     }
     const { id } = req.params;
 
-    const {
-      email,
-      password,
-      fullname,
-      phone,
-      shop_name,
-      shop_logo,
-      shop_address,
-    } = req.body;
+    const { name, logo, address, status } = req.body;
 
-    const data = await ShopService.update(
-      id,
-      email,
-      password,
-      fullname,
-      phone,
-      shop_name,
-      shop_logo,
-      shop_address
-    );
-    res.status(200).json(data);
-  };
-
-  //Delete Shop
-  deleteShop = async (req, res, next) => {
-    const { id } = req.params;
-    const data = await ShopService.deleteShop(id);
+    const data = await ShopService.update(id, name, logo, address, status);
     res.status(200).json(data);
   };
 }

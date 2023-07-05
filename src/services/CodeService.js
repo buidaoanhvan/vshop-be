@@ -2,27 +2,26 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const lodash = require("lodash");
 // const { log } = require("winston");
-const qrCode = require('qrcode');
-const path = require('path');
+const qrCode = require("qrcode");
+const path = require("path");
+const { timeStamp } = require("console");
 
 class CodeService {
-
-
-  static createCode = async ({ voucher_id, firstCode, number }) => {
-
+  static createCode = async ({ voucher_id, number }) => {
     const lastId = await this.lastCodex();
     let idCodex = 0;
     if (lastId) {
       idCodex = parseInt(lastId.id);
-    }
-    else {
+    } else {
       idCodex = 1;
     }
     const codexValues = [];
 
     for (let i = 0; i < number; i++) {
+      const timestamp = Date.now();
       const newCodexValue = idCodex + i;
-      const newCodex = firstCode + String(newCodexValue).padStart(7, '0');
+      const newCodex = timestamp + String(newCodexValue).padStart(7, "0");
+      console.log(timeStamp);
       codexValues.push({ codex: newCodex, voucher_id, is_used: 0, status: 0 });
     }
 
@@ -31,7 +30,10 @@ class CodeService {
 
     for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
       const startIndex = batchIndex * batchSize;
-      const endIndex = Math.min((batchIndex + 1) * batchSize, codexValues.length);
+      const endIndex = Math.min(
+        (batchIndex + 1) * batchSize,
+        codexValues.length
+      );
       const batch = codexValues.slice(startIndex, endIndex);
 
       await prisma.codex.createMany({
@@ -44,29 +46,25 @@ class CodeService {
       code: "00",
       message: "codex create success",
       //data: code
-    }
+    };
   };
   static lastCodex = async () => {
     return await prisma.codex.findFirst({
-      orderBy: { id: 'desc' },
-      select: { id: true }
+      orderBy: { id: "desc" },
+      select: { id: true },
     });
-
-  }
-
-
-
+  };
 
   static view = async (req, res) => {
     const code = await prisma.codex.findMany({
-      orderBy: [{ created_at: "desc" }]
+      orderBy: [{ created_at: "desc" }],
     });
     return {
       code: "00",
       message: "code is show all",
       data: code,
-    }
-  }
+    };
+  };
 
   static generateQRCode = async (codexValues) => {
     try {
@@ -75,19 +73,27 @@ class CodeService {
       }
 
       const qrCodePromises = codexValues.map((codex) => {
-        const filePath = path.join(__dirname, '..', '..', 'public', 'qrcodes', `${codex}.png`);
-        console.log(filePath)
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "public",
+          "qrcodes",
+          `${codex}.png`
+        );
+        console.log(filePath);
         return qrCode.toFile(filePath, codex);
       });
 
       await Promise.all(qrCodePromises);
 
-      return codexValues.map((codex) => process.env.PUBLIC_URL + `/qrcodes/${codex}.png`);
+      return codexValues.map(
+        (codex) => process.env.PUBLIC_URL + `/qrcodes/${codex}.png`
+      );
     } catch (error) {
       throw error;
     }
-  }
-
+  };
 
   // static createCode = async ({ voucher_id, phone, number }) => {
   //     const existingCodexValues = await prisma.codex.findMany({
@@ -148,7 +154,6 @@ class CodeService {
 
   //     return codex;
   //   };
-
 }
 
 module.exports = CodeService;

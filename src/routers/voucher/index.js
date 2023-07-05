@@ -12,7 +12,7 @@ const voucherValidatorSchema = {
   },
   description: { notEmpty: true },
   image: {},
-  status: { notEmpty: true },
+  status: { notEmpty: false },
   discount_value: {
     notEmpty: true,
     // isNumber: true,
