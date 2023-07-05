@@ -31,6 +31,21 @@ const createdShopValidatorSchema = {
   },
 };
 
+const updateShopValidatorSchema = {
+  name: {
+    notEmpty: true,
+  },
+  logo: {
+    notEmpty: true,
+  },
+  address: {
+    notEmpty: true,
+  },
+  status: {
+    notEmpty: true,
+  },
+};
+
 router.post(
   "/shop",
   isAdmin,
@@ -40,16 +55,14 @@ router.post(
 
 router.get("/shop", ShopController.allShop);
 
+router.get("/shop/:id", ShopController.getShopById); // Added route for getting shop by ID
+
+router.get("/shop/search/:name", ShopController.searchShopByName); // New route for searching shop by name
+
 router.patch(
   "/shop/update/:id",
-  checkSchema(createdShopValidatorSchema),
+  checkSchema(updateShopValidatorSchema),
   ShopController.update
-);
-
-router.delete(
-  "/shop/delete/:id",
-  param("id").isInt().notEmpty(),
-  ShopController.deleteShop
 );
 
 module.exports = router;

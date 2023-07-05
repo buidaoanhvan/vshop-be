@@ -34,43 +34,46 @@ class VoucherService {
     title,
     description,
     image,
-    status,
     discount_value,
     discount_type,
     max_discount,
     start_time,
     end_time,
   }) => {
-    const voucher = await prisma.vouchers.create({
-      data: {
-        shops: { connect: { id: shop_id } },
-        title,
-        description,
-        image,
-        status,
-        discount_value,
-        discount_type,
-        max_discount,
-        start_time,
-        end_time,
-      },
-    });
-    return {
-      code: "00",
-      message: "Vouchers create success!",
-      data: lodash.pick(voucher, [
-        "shop_id",
-        "title",
-        "description",
-        "image",
-        "status",
-        "discount_value",
-        "discount_type",
-        "max_discount",
-        "start_time",
-        "end_time",
-      ]),
-    };
+    try {
+      const voucher = await prisma.vouchers.create({
+        data: {
+          shops: { connect: { id: shop_id } },
+          title,
+          description,
+          image,
+          status:0,
+          discount_value,
+          discount_type,
+          max_discount,
+          start_time,
+          end_time,
+        },
+      });
+      return {
+        code: "00",
+        message: "Vouchers create success!",
+        data: lodash.pick(voucher, [
+          "shop_id",
+          "title",
+          "description",
+          "image",
+          "status",
+          "discount_value",
+          "discount_type",
+          "max_discount",
+          "start_time",
+          "end_time",
+        ]),
+      };
+    } catch (error) {
+      console.log(error);
+    }
   };
   //update all for admin
   static update = async (
