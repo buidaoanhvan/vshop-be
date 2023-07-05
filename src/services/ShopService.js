@@ -62,46 +62,60 @@ class ShopService {
     };
   };
 
-  // Update Shop aa
-  static update = async (
-    id,
-    email,
-    password,
-    fullname,
-    phone,
-    shop_name,
-    shop_logo,
-    shop_address
-  ) => {
-    const shop = await prisma.shops.update({
-      where: { id: parseInt(id) },
-      data: {
-        email,
-        password,
-        fullname,
-        phone,
-        shop_name,
-        shop_logo,
-        shop_address,
-      },
-    });
-    return {
-      code: "00",
-      message: "Shop update success!",
-      data: shop,
-    };
+  static getShopById = async (id) => {
+    try {
+      const shop = await prisma.shops.findUnique({
+        where: { id: parseInt(id) },
+      });
+      return {
+        code: "00",
+        message: "Get Shop by ID Success",
+        data: shop,
+      };
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // Delete Shop
-  static deleteShop = async (id) => {
-    const shop = await prisma.shops.delete({
-      where: { id: parseInt(id) },
-    });
-    return {
-      code: "00",
-      message: "Shop deleted successfully!",
-      data: shop,
-    };
+  static searchShopByName = async (name) => {
+    try {
+      const shops = await prisma.shops.findMany({
+        where: {
+          name: {
+            contains: name
+          },
+        },
+      });
+      return {
+        code: "00",
+        message: "Search Shops by Name Success",
+        data: shops,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Update Shop aa
+  static update = async (id, name, logo, address, status) => {
+    try {
+      const shop = await prisma.shops.update({
+        where: { id: parseInt(id) },
+        data: {
+          name,
+          logo,
+          address,
+          status,
+        },
+      });
+      return {
+        code: "00",
+        message: "Shop update success!",
+        data: shop,
+      };
+    } catch (error) {
+      console.log(error);
+    }
   };
 }
 
