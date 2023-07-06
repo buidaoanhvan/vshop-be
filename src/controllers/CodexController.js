@@ -1,6 +1,5 @@
 const { validationResult } = require("express-validator");
 const CodeService = require("../services/CodeService");
-const router = require("../routers/codex");
 
 class CodeController {
   create = async (req, res) => {

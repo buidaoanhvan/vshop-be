@@ -71,7 +71,7 @@ class CodeService {
     });
   };
 
-  static view = async ({ page }) => {
+  static view = async ({ page, voucher_id }) => {
     const currentPage = page || 1;
     const listPerPage = 10;
     const offset = (currentPage - 1) * listPerPage;
@@ -79,6 +79,9 @@ class CodeService {
     const code = await prisma.codex.findMany({
       skip: offset,
       take: listPerPage,
+      where: {
+        voucher_id,
+      },
     });
 
     return {

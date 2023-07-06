@@ -14,12 +14,36 @@ const codexCreateValidatorSchema = {
   },
 };
 
+const codexViewValidatorSchema = {
+  voucher_id: {
+    notEmpty: true,
+    isNumeric: true,
+  },
+};
+
+const codexDetailValidatorSchema = {
+  codex: {
+    notEmpty: true,
+    isNumeric: true,
+  },
+};
+
 router.post(
   "/code/create",
   checkSchema(codexCreateValidatorSchema),
   CodexController.create
 );
-router.post("/code/view", CodexController.view);
+
+router.post(
+  "/code/view",
+  checkSchema(codexViewValidatorSchema),
+  CodexController.view
+);
+
+router.post("/code/detail");
+
+router.post("/code/used");
+
 router.post("/code/qrcode", CodexController.generateQRCode);
 
 module.exports = router;
