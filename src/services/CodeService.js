@@ -1,8 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const lodash = require("lodash");
-const qrCode = require("qrcode");
-const path = require("path");
 
 class CodeService {
   static createCode = async ({ voucher_id, quantity }) => {
@@ -94,92 +92,66 @@ class CodeService {
     };
   };
 
-  static generateQRCode = async (codexValues) => {
-    try {
-      if (!Array.isArray(codexValues)) {
-        codexValues = [codexValues]; // Convert single codex value to an array
-      }
+  static detail = async ({ codex }) => {
+    const voucher = await prisma.codex.findFirst({
+      where: {
+        codex,
+      },
+      include: {
+        vouchers: true,
+      },
+    });
 
-      const qrCodePromises = codexValues.map((codex) => {
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "qrcodes",
-          `${codex}.png`
-        );
-        console.log(filePath);
-        return qrCode.toFile(filePath, codex);
-      });
-
-      await Promise.all(qrCodePromises);
-
-      return codexValues.map(
-        (codex) => process.env.PUBLIC_URL + `/qrcodes/${codex}.png`
-      );
-    } catch (error) {
-      throw error;
+    if (!voucher) {
+      return {
+        code: "01",
+        message: "code is null",
+      };
     }
+
+    return {
+      code: "00",
+      message: "code read ok",
+      data: voucher,
+    };
   };
-  //     const existingCodexValues = await prisma.codex.findMany({
-  //       where: { voucher_id },
-  //       select: { codex: true },
-  //     });
 
-  //     const existingCodexSet = new Set(existingCodexValues.map((item) => item.codex));
-  //     const codexValues = [];
+  static used = async ({ codex }) => {
+    const code = await prisma.codex.findFirst({
+      where: {
+        codex,
+      },
+    });
 
-  //     for (let i = 0; i < number; i++) {
-  //       let newCodex = generateRandomCodex(existingCodexSet);
-  //       existingCodexSet.add(newCodex);
+    if (!code) {
+      return {
+        code: "01",
+        message: "code is null",
+      };
+    }
 
-  //       codexValues.push({
-  //         codex: newCodex,
-  //         phone,
-  //         voucher_id,
-  //         is_used: 0,
-  //         status: 0,
-  //       });
-  //     }
+    const codeNew = await prisma.codex.update({
+      where: {
+        id: code.id,
+      },
+      data: {
+        is_used: 1,
+      },
+    });
 
-  //     const batchSize = 5000;
-  //     const totalBatches = Math.ceil(codexValues.length / batchSize);
+    if (!codeNew) {
+      return {
+        code: "02",
+        message: "code is false",
+      };
+    }
 
-  //     for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-  //       const startIndex = batchIndex * batchSize;
-  //       const endIndex = Math.min((batchIndex + 1) * batchSize, codexValues.length);
-  //       const batch = codexValues.slice(startIndex, endIndex);
-
-  //       await prisma.codex.createMany({
-  //         data: batch,
-  //         skipDuplicates: true,
-  //       });
-  //     }
-
-  //     return {
-  //       code: '00',
-  //       message: 'codex create success',
-  //     };
-  //   };
-
-  //  generateRandomCodex = (existingCodexSet) => {
-  //     const length = 4;
-  //     const chars = '0123456789';
-  //     let codex = '';
-
-  //     for (let i = 0; i < length; i++) {
-  //       const randomIndex = Math.floor(Math.random() * chars.length);
-  //       codex += chars[randomIndex];
-  //     }
-
-  //     // Ensure uniqueness
-  //     while (existingCodexSet.has(codex)) {
-  //       codex = generateRandomCodex(existingCodexSet);
-  //     }
-
-  //     return codex;
-  //   };
+    return {
+      code: "00",
+      message: "code used ok",
+      data: codeNew,
+    };
+  };
 }
 
 module.exports = CodeService;

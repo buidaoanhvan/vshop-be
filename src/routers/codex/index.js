@@ -24,7 +24,7 @@ const codexViewValidatorSchema = {
 const codexDetailValidatorSchema = {
   codex: {
     notEmpty: true,
-    isNumeric: true,
+    isString: true
   },
 };
 
@@ -40,10 +40,16 @@ router.post(
   CodexController.view
 );
 
-router.post("/code/detail");
+router.post(
+  "/code/detail",
+  checkSchema(codexDetailValidatorSchema),
+  CodexController.detail
+);
 
-router.post("/code/used");
-
-router.post("/code/qrcode", CodexController.generateQRCode);
+router.post(
+  "/code/used",
+  checkSchema(codexDetailValidatorSchema),
+  CodexController.used
+);
 
 module.exports = router;
