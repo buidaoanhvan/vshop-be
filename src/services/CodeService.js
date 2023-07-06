@@ -1,53 +1,67 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const lodash = require("lodash");
-// const { log } = require("winston");
-const qrCode = require("qrcode");
-const path = require("path");
-const { timeStamp } = require("console");
 
 class CodeService {
-  static createCode = async ({ voucher_id, number }) => {
-    const lastId = await this.lastCodex();
-    let idCodex = 0;
-    if (lastId) {
-      idCodex = parseInt(lastId.id);
-    } else {
-      idCodex = 1;
-    }
-    const codexValues = [];
-
-    for (let i = 0; i < number; i++) {
-      const timestamp = Date.now();
-      const newCodexValue = idCodex + i;
-      const newCodex = timestamp + String(newCodexValue).padStart(7, "0");
-      console.log(timeStamp);
-      codexValues.push({ codex: newCodex, voucher_id, is_used: 0, status: 0 });
+  static createCode = async ({ voucher_id, quantity }) => {
+    if (quantity > 100000) {
+      return {
+        code: "02",
+        message: `codex create max 100000`,
+      };
     }
 
-    const batchSize = 5000;
-    const totalBatches = Math.ceil(codexValues.length / batchSize);
+    const codex = [];
+    const voucher = await prisma.vouchers.findFirst({
+      where: {
+        id: voucher_id,
+      },
+      include: {
+        shops: true,
+      },
+    });
 
-    for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-      const startIndex = batchIndex * batchSize;
-      const endIndex = Math.min(
-        (batchIndex + 1) * batchSize,
-        codexValues.length
-      );
-      const batch = codexValues.slice(startIndex, endIndex);
-
-      await prisma.codex.createMany({
-        data: batch,
-        skipDuplicates: true,
+    if (!voucher) {
+      return {
+        code: "01",
+        message: "Voucher và shop không hợp lệ",
+      };
+    }
+    const shop_prefix = voucher.shops.name
+      .substring(0, 3)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    //quy tắc tạo codex = 3 ký tự đầu của tên shop + timestamp + 10 só random
+    for (let i = 0; i < quantity; i++) {
+      codex.push({
+        codex:
+          shop_prefix.toUpperCase() +
+          Date.now() +
+          Math.floor(1000000000 + Math.random() * 9000000000),
+        voucher_id: voucher.id,
+        is_used: 0,
+        status: 0,
       });
     }
 
+    const batch = lodash.chunk(codex, 1000);
+    let ok = 0;
+    await Promise.all(
+      batch.map(async (b) => {
+        const { count } = await prisma.codex.createMany({
+          data: b,
+          skipDuplicates: true,
+        });
+        ok += count;
+      })
+    );
+
     return {
       code: "00",
-      message: "codex create success",
-      //data: code
+      message: `codex create success ${ok} code`,
     };
   };
+
   static lastCodex = async () => {
     return await prisma.codex.findFirst({
       orderBy: { id: "desc" },
@@ -55,105 +69,89 @@ class CodeService {
     });
   };
 
-  static view = async (req, res) => {
+  static view = async ({ page, voucher_id }) => {
+    const currentPage = page || 1;
+    const listPerPage = 10;
+    const offset = (currentPage - 1) * listPerPage;
+
     const code = await prisma.codex.findMany({
-      orderBy: [{ created_at: "desc" }],
+      skip: offset,
+      take: listPerPage,
+      where: {
+        voucher_id,
+      },
     });
+
     return {
       code: "00",
       message: "code is show all",
       data: code,
+      meta: {
+        page: currentPage,
+      },
     };
   };
 
-  static generateQRCode = async (codexValues) => {
-    try {
-      if (!Array.isArray(codexValues)) {
-        codexValues = [codexValues]; // Convert single codex value to an array
-      }
+  static detail = async ({ codex }) => {
+    const voucher = await prisma.codex.findFirst({
+      where: {
+        codex,
+      },
+      include: {
+        vouchers: true,
+      },
+    });
 
-      const qrCodePromises = codexValues.map((codex) => {
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "qrcodes",
-          `${codex}.png`
-        );
-        console.log(filePath);
-        return qrCode.toFile(filePath, codex);
-      });
-
-      await Promise.all(qrCodePromises);
-
-      return codexValues.map(
-        (codex) => process.env.PUBLIC_URL + `/qrcodes/${codex}.png`
-      );
-    } catch (error) {
-      throw error;
+    if (!voucher) {
+      return {
+        code: "01",
+        message: "code is null",
+      };
     }
+
+    return {
+      code: "00",
+      message: "code read ok",
+      data: voucher,
+    };
   };
 
-  // static createCode = async ({ voucher_id, phone, number }) => {
-  //     const existingCodexValues = await prisma.codex.findMany({
-  //       where: { voucher_id },
-  //       select: { codex: true },
-  //     });
+  static used = async ({ codex }) => {
+    const code = await prisma.codex.findFirst({
+      where: {
+        codex,
+      },
+    });
 
-  //     const existingCodexSet = new Set(existingCodexValues.map((item) => item.codex));
-  //     const codexValues = [];
+    if (!code) {
+      return {
+        code: "01",
+        message: "code is null",
+      };
+    }
 
-  //     for (let i = 0; i < number; i++) {
-  //       let newCodex = generateRandomCodex(existingCodexSet);
-  //       existingCodexSet.add(newCodex);
+    const codeNew = await prisma.codex.update({
+      where: {
+        id: code.id,
+      },
+      data: {
+        is_used: 1,
+      },
+    });
 
-  //       codexValues.push({
-  //         codex: newCodex,
-  //         phone,
-  //         voucher_id,
-  //         is_used: 0,
-  //         status: 0,
-  //       });
-  //     }
+    if (!codeNew) {
+      return {
+        code: "02",
+        message: "code is false",
+      };
+    }
 
-  //     const batchSize = 5000;
-  //     const totalBatches = Math.ceil(codexValues.length / batchSize);
-
-  //     for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-  //       const startIndex = batchIndex * batchSize;
-  //       const endIndex = Math.min((batchIndex + 1) * batchSize, codexValues.length);
-  //       const batch = codexValues.slice(startIndex, endIndex);
-
-  //       await prisma.codex.createMany({
-  //         data: batch,
-  //         skipDuplicates: true,
-  //       });
-  //     }
-
-  //     return {
-  //       code: '00',
-  //       message: 'codex create success',
-  //     };
-  //   };
-
-  //  generateRandomCodex = (existingCodexSet) => {
-  //     const length = 4;
-  //     const chars = '0123456789';
-  //     let codex = '';
-
-  //     for (let i = 0; i < length; i++) {
-  //       const randomIndex = Math.floor(Math.random() * chars.length);
-  //       codex += chars[randomIndex];
-  //     }
-
-  //     // Ensure uniqueness
-  //     while (existingCodexSet.has(codex)) {
-  //       codex = generateRandomCodex(existingCodexSet);
-  //     }
-
-  //     return codex;
-  //   };
+    return {
+      code: "00",
+      message: "code used ok",
+      data: codeNew,
+    };
+  };
 }
 
 module.exports = CodeService;
