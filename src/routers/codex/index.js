@@ -19,7 +19,7 @@ router.post(
   checkSchema(codexCreateValidatorSchema),
   CodexController.create
 );
-router.get("/code/view", CodexController.view);
+router.post("/code/view", CodexController.view);
 router.post("/code/qrcode", CodexController.generateQRCode);
 
 module.exports = router;

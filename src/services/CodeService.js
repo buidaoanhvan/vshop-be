@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 const lodash = require("lodash");
 const qrCode = require("qrcode");
 const path = require("path");
+
 class CodeService {
   static createCode = async ({ voucher_id, quantity }) => {
     if (quantity > 100000) {
@@ -70,14 +71,23 @@ class CodeService {
     });
   };
 
-  static view = async (req, res) => {
+  static view = async ({ page }) => {
+    const currentPage = page || 1;
+    const listPerPage = 10;
+    const offset = (currentPage - 1) * listPerPage;
+
     const code = await prisma.codex.findMany({
-      orderBy: [{ created_at: "desc" }],
+      skip: offset,
+      take: listPerPage,
     });
+
     return {
       code: "00",
       message: "code is show all",
       data: code,
+      meta: {
+        page: currentPage,
+      },
     };
   };
 

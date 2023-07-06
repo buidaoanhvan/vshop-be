@@ -29,7 +29,7 @@ class CodeController {
     res.status(200).json(data);
   };
 
-   generateQRCode = async (req, res, next) => {
+  generateQRCode = async (req, res, next) => {
     try {
       const { codexValues } = req.body;
 
@@ -38,7 +38,7 @@ class CodeController {
       res.status(200).json({ qrCodeFilePaths });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Failed to generate QR codes' });
+      res.status(500).json({ message: "Failed to generate QR codes" });
     }
   };
 }
