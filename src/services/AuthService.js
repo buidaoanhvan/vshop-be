@@ -5,6 +5,24 @@ const { createTokens } = require("../utils/auth.util");
 const lodash = require("lodash");
 
 class AuthService {
+
+  //Get Shop User
+  static getAllUser = async () => {
+    const data = await prisma.users.findMany(
+      {
+        include: {
+          roles: true,
+        },
+      }
+    );
+    return {
+      code: "00",
+      message: "Get All User Success",
+      data,
+    };
+  };
+
+
   //Register user
   static registerService = async ({ email, password, fullname, phone }) => {
     const isUser = await prisma.users.findFirst({ where: { email } });

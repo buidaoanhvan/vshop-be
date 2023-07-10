@@ -26,4 +26,10 @@ router.post(
   AuthController.register
 );
 
+
+
+router.get(
+  "/viewUser",
+  AuthController.viewUser
+);
 module.exports = router;
