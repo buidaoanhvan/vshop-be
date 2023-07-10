@@ -26,7 +26,7 @@ const errorHandling = (err, req, res, next) => {
   });
 };
 
-app.use(express.static(__dirname + "public"));
+app.use(express.static("public"));
 app.use(express.json());
 app.use("/favicon.ico", express.static("images/favicon.ico"));
 app.use(helmet());
