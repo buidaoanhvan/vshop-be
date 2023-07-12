@@ -7,6 +7,9 @@ class VoucherService {
   static viewAll = async (req, res) => {
     const voucher = await prisma.vouchers.findMany({
       orderBy: [{ created_at: "desc" }],
+      include: {
+        shops: true,
+      },
     });
     return {
       code: "00",
@@ -47,7 +50,7 @@ class VoucherService {
           title,
           description,
           image,
-          status:0,
+          status: 0,
           discount_value,
           discount_type,
           max_discount,

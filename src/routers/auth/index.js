@@ -9,7 +9,6 @@ const registerValidatorSchema = {
     notEmpty: true,
   },
   password: {
-    isStrongPassword: true,
     notEmpty: true,
   },
   fullname: {

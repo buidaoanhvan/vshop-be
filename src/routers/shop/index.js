@@ -8,41 +8,50 @@ const { isAdmin } = require("../../middlewares/authorize");
 const createdShopValidatorSchema = {
   email: {
     isEmail: true,
-    notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra email",
   },
   password: {
-    isStrongPassword: true,
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra mật khẩu",
   },
   fullname: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra họ tên",
   },
   phone: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra số điện thoại",
   },
   shop_name: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra tên cửa hàng",
   },
   shop_logo: {
     notEmpty: true,
+    errorMessage: "Vui lòng tải hình ảnh cửa hàng",
   },
   shop_address: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra địa chỉ cửa hàng",
   },
 };
 
 const updateShopValidatorSchema = {
   name: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra lại tên cửa hàng",
   },
   logo: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra lại hình ảnh",
   },
   address: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra lại địa chỉ",
   },
   status: {
     notEmpty: true,
+    errorMessage: "Vui lòng kiểm tra trạng thái",
   },
 };
 
