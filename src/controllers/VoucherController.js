@@ -43,7 +43,6 @@ class VoucherController {
     const { id } = req.params;
 
     const {
-      shop_id,
       title,
       description,
       image,
@@ -57,7 +56,6 @@ class VoucherController {
 
     const data = await VoucherService.update(
       id,
-      shop_id,
       title,
       description,
       image,

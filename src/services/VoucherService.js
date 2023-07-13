@@ -81,7 +81,6 @@ class VoucherService {
   //update all for admin
   static update = async (
     id,
-    shop_id,
     title,
     description,
     image,
@@ -95,7 +94,6 @@ class VoucherService {
     const voucher = await prisma.vouchers.update({
       where: { id: parseInt(id) },
       data: {
-        shops: { connect: { id: shop_id } },
         title,
         description,
         image,
